@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-4">The Shoppies</h1>
+    </div>
+  </div>
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div id="left-autocomplete"></div>
+        <div id="left-summary"></div>
+      </div>
+
+      <div class="column">
+        <div id="right-autocomplete"><label><b>Nominations (Select Five)</b></label></div>
+        <div id="banner"></div>
+        <div id="nominee-list">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="utils.js"></script>
+  <script src="autocomplete.js"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>

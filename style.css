@@ -1,0 +1,76 @@
+.tutorial {
+  width: 600px;
+  text-align: center;
+  margin: auto;
+}
+
+button {
+  background: aliceblue;
+  padding: 5px;
+  font-size: 12px;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+}
+
+figure.image {
+  display: flex;
+  justify-content: center;
+  background-color: black;
+}
+
+figure .image img {
+  width: 128px;
+}
+
+.notification {
+  margin-top: 20px !important;
+}
+
+.results {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.title .icon {
+  margin-left: 15px;
+}
+
+.hero {
+  margin-bottom: 20px;
+}
+
+.forms {
+  display: flex;
+  justify-content: space-around;
+}
+
+
+.dropdown-item{
+  display: flex;
+  align-items: center;
+  height: 60px;
+}
+
+.dropdown-item img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.details {
+  padding-right: 20px;
+}
+
+#nominee-list {
+  height: 40vh;
+  width: 100%;
+  border-radius: 8px;
+}
+
+li {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  border-radius: 12px;
+}
