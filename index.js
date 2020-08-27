@@ -108,7 +108,7 @@ const removeNominee = (title, year) => {
 let leftMovie;
 
 const onMovieSelect = async (movie, summaryElement, side) => {
-    const response = await axios.get('http://www.omdbapi.com/', {
+    const response = await axios.get('https://www.omdbapi.com/', {
         params: {
             apikey: 'cb525a8b',
             i: movie.imdbID
