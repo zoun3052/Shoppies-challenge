@@ -188,6 +188,7 @@ li p {
 }
 
 .card-title {
+  color: black;
   font-size: 24px;
 }
 
@@ -204,7 +205,17 @@ li p {
 
 .filled {
   animation: tada; /* referring directly to the animation's @keyframe declaration */
+  animation-duration: 1s;
+}
+
+.filled:hover {
+  animation: pulse; /* referring directly to the animation's @keyframe declaration */
   animation-duration: 2s;
+}
+
+.message {
+  animation: heartBeat; /* referring directly to the animation's @keyframe declaration */
+  animation-duration: 1.5s;
 }
 
 @media (max-width: 768px) {

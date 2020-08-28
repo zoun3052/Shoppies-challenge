@@ -42,7 +42,7 @@ const autoCompleteConfig = {
             }
         });
         if (response.data.Error) {
-            document.querySelector('#left-summary').innerHTML = `No Results`;
+            document.querySelector('#left-summary').innerHTML = `No results for "${searchTerm}"`;
             return [];
         }
         // get array of different movies fetched
