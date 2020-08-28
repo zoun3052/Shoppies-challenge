@@ -2,7 +2,7 @@
 
 const createAutoComplete = ({ root, renderOption, onOptionSelect, inputValue, fetchData }) => {
     root.innerHTML = `
-    <label><b>Search For Movie Title</b></label>
+    <label>Search For Movie Title</label>
     <input class="input"/>
     <div class="dropdown">
         <div class="dropdown-menu">
@@ -20,12 +20,15 @@ const createAutoComplete = ({ root, renderOption, onOptionSelect, inputValue, fe
 
         if (!items.length) {
             dropdown.classList.remove('is-active');
+            document.querySelector('.card').removeAttribute("style");
             return;
         }
 
         resultsWrapper.innerHTML = '';
         // make dropdown active if data is fetched successfully
         dropdown.classList.add('is-active');
+        document.querySelector('#left-summary').innerHTML = ``;
+        document.querySelector('.card').setAttribute("style", "display:none");
         for (let item of items) {
             const option = document.createElement('a');
         

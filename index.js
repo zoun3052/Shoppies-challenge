@@ -5,20 +5,19 @@ const autoCompleteConfig = {
     renderOption(movie) {
         const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster;
         // disable button if movie is already on nominations list
-        if (currentNominees.has(movie.Title)) {
-            if (currentNominees.get(movie.Title) === movie.Year) {
-                return `
+        if (currentNominees.has(movie.Title.concat(movie.Year))) {
+            return `
                 <img src="${imgSrc}"/>
-                ${movie.Title} (${movie.Year})
+                <div class="details">${movie.Title} (${movie.Year})</div>
                 <button disabled="disabled">Nominate</button>
                 `;
-            }
         }
 
+        // disable button if user already has 5 nominations
         if (nomineeCount >= 5) {
             return `
                 <img src="${imgSrc}"/>
-                ${movie.Title} (${movie.Year})
+                <div class="details">${movie.Title} (${movie.Year})</div>
                 <button disabled="disabled">Nominate</button>
             `;
         }
@@ -27,7 +26,7 @@ const autoCompleteConfig = {
 
         return `
             <img src="${imgSrc}"/>
-            ${movie.Title} (${movie.Year})
+            <div class="details">${movie.Title} (${movie.Year})</div>
             <button onClick="addNominee('${filterTitle}', '${movie.Year}')">Nominate</button>
         `;
 
@@ -43,7 +42,7 @@ const autoCompleteConfig = {
             }
         });
         if (response.data.Error) {
-            document.querySelector('#left-summary').innerHTML = `No Results Found`;
+            document.querySelector('#left-summary').innerHTML = `No Results`;
             return [];
         }
         // get array of different movies fetched
@@ -60,49 +59,92 @@ createAutoComplete({
     }
 });
 
+// increment to create unique ids
+let idCount = 0;
+
 // add movie to nominations list (if it is not already added) if user clicks nominate button
 const addNominee = (title, year) => {
-    let nomList = document.querySelector('#nominee-list');
-    const selection = document.createElement('li');
+    const selection = document.querySelector('.empty');
+    const details = document.getElementById(title.concat(year));
+
+    //disable nominate button that appears when user clicks on movie details
+    if (details !== null) {
+        details.setAttribute("disabled", "disabled");
+    }
+
+    // remove message telling user to add 5 nominations 
+    let banner = document.getElementById("banner");
+    if (banner !== null) {
+        banner.innerHTML = ``;
+        banner.removeAttribute("style");
+    }
+
     // set unique id for each nominee
-    selection.setAttribute("id", title);
+    selection.setAttribute("id", title.concat(idCount));
+    selection.setAttribute("style", "background-color: #efece3");
+    selection.setAttribute("class", "filled panel-block");
     selection.innerHTML = `
         <div class="details">${title} (${year})</div>
         <button onClick="removeNominee('${title}', '${year}')">Remove</button>
     `;
-
-    selection.setAttribute("class", "panel-block");
-    nomList.appendChild(selection);
-
-    // keep track of movies already nominated and disable button
-    currentNominees.set(title, year);
+      
+    // keep track of movies already nominated (many duplicate movie names so concat the year to avoid being overridden)
+    // store id as the value 
+    currentNominees.set(title.concat(year), title.concat(idCount));
+    idCount++;
 
     // keep track of number of movies added to nominations list
     nomineeCount++;
+
     // display banner after five nominees have been added
     if (nomineeCount === 5) {
-        document.getElementById("banner").innerHTML = `
+        let banner = document.getElementById("banner");
+        banner.innerHTML = `
         <article class="message">
             <div class="message-header">
                 <p>Thank you for your nominations!</p>
             </div>
             <div class="message-body">
-                Changed your mind about a movie? No problem. Remove any selection & search for a better fit!
+                <p>You may now submit your selections.</p>
+                <p>Changed your mind about a movie? No problem. Remove any selection and search for a better fit!</p>
             </div>
         </article>`;
+
+        banner.setAttribute("style", "margin-bottom: 15px");
     }
 };
 
 // remove movie from nominations list
 const removeNominee = (title, year) => {
-    currentNominees.delete(title);
-    let nominee = document.getElementById(title);
-    nominee.remove();
+    // get id of movie to remove
+    const id = currentNominees.get(title.concat(year));
+    let nominee = document.getElementById(id);
+
+    //enable nominate button that appears when user clicks on movie details
+    const details = document.getElementById(title.concat(year));
+
+    if (details !== null) {
+        details.removeAttribute("disabled");
+    }
+
     nomineeCount--;
 
     if (nomineeCount < 5) {
         document.getElementById("banner").innerHTML = ``;
+        document.getElementById("banner").removeAttribute("style");
     }
+
+    nominee.remove();
+
+    //remove movie from map
+    currentNominees.delete(title.concat(year));
+
+    const option = document.createElement('li');
+    option.classList.add('panel-block');
+    option.classList.add('empty');
+    option.innerHTML = `<p><span>Choose a Film</span></p>`;
+
+    document.getElementById("nominee-list").appendChild(option);
 };
 
 let leftMovie;
@@ -128,7 +170,6 @@ const movieTemplate = movieDetail => {
         movieDetail.BoxOffice
     );
 
-    const metascore = parseInt(movieDetail.Metascore);
     const imdbRating = parseFloat(movieDetail.imdbRating);
     const imdbVotes = parseInt(movieDetail.imdbVotes.replace(/,/g, ''));
 
@@ -142,6 +183,15 @@ const movieTemplate = movieDetail => {
         }
     }, 0);
 
+    // create unique id for nominate button that is inside movie details (make this different than the id assigned to the list elements)
+    const buttonId = movieDetail.Title.concat(movieDetail.Year);
+    let nominateButton;
+    if (currentNominees.has(buttonId)) {
+        nominateButton = `<button id="${buttonId}" onClick="addNominee('${movieDetail.Title}', '${movieDetail.Year}')" disabled="disabled">Nominate</button>`;
+    } else {
+        nominateButton = `<button id="${buttonId}" onClick="addNominee('${movieDetail.Title}', '${movieDetail.Year}')">Nominate</button>`;
+    }
+
     return `
     <article class="media">
       <figure class="media-left">
@@ -152,31 +202,44 @@ const movieTemplate = movieDetail => {
       <div class="media-content">
         <div class="content">
           <h1>${movieDetail.Title}</h1>
+          ${nominateButton}
           <h4>${movieDetail.Genre}</h4>
           <p>${movieDetail.Plot}</p>
         </div>
       </div>
     </article>
-    <article data-value=${awards} class="notification is-primary">
+    <article data-value=${awards} class="notification">
         <p class="title">${movieDetail.Awards}</p>
         <p class="subtitle">Awards</p>
     </article>
-    <article data-value=${dollars} class="notification is-primary">
+    <article data-value=${dollars} class="notification">
         <p class="title">${movieDetail.BoxOffice}</p>
         <p class="subtitle">Box Office</p>
     </article>
-    <article data-value=${metascore} class="notification is-primary">
-        <p class="title">${movieDetail.Metascore}</p>
-        <p class="subtitle">Metascore</p>
-    </article>
-    <article data-value=${imdbRating} class="notification is-primary">
+    <article data-value=${imdbRating} class="notification">
         <p class="title">${movieDetail.imdbRating}</p>
         <p class="subtitle">IMDB Rating</p>
     </article>
-    <article data-value=${imdbVotes} class="notification is-primary">
+    <article data-value=${imdbVotes} class="notification">
         <p class="title">${movieDetail.imdbVotes}</p>
         <p class="subtitle">IMDB Votes</p>
     </article>
   `;
 
 };
+
+const redirect = () => {
+    if (nomineeCount === 5) {
+        window.location="redirect.html";
+    } else {
+        let banner = document.getElementById("banner");
+        banner.innerHTML = `
+        <article class="message">
+            <div class="message-header">
+                <p>Please add five nominations</p>
+            </div>
+        </article>`;
+
+        banner.setAttribute("style", "margin-bottom: 15px");
+    }
+}
