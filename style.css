@@ -202,6 +202,11 @@ li p {
   margin-top: 20px;
 }
 
+.filled {
+  animation: tada; /* referring directly to the animation's @keyframe declaration */
+  animation-duration: 2s;
+}
+
 @media (max-width: 768px) {
   .card-title {
     font-size: 18px;
